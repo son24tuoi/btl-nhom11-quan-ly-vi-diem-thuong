@@ -1,0 +1,4 @@
+#ifndef PENDINGCHANGE_H
+#define PENDINGCHANGE_H
+
+#endif
