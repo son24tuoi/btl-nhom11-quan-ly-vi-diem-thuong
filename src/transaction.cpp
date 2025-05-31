@@ -2,6 +2,8 @@
 #include "transaction.h"
 #include <sstream>
 #include <string>
+#include <iomanip>
+#include <ctime>
 
 using namespace std;
 
@@ -74,10 +76,22 @@ bool Transaction::isBegin() const
 
 std::string Transaction::getPrintTime() const
 {
-    time_t rawTime = static_cast<time_t>(stoll(timestamp));
-    string result = ctime(&rawTime);
-    result.pop_back(); // Xoá ký tự '\n' ở cuối
-    return result;
+    try
+    {
+        time_t rawTime = static_cast<time_t>(std::stoll(timestamp));
+        std::tm timeInfo;
+        if (localtime_r(&rawTime, &timeInfo) == nullptr)
+        {
+            return "Invalid time";
+        }
+        std::ostringstream oss;
+        oss << std::put_time(&timeInfo, "%c");
+        return oss.str();
+    }
+    catch (const std::exception &)
+    {
+        return "Invalid timestamp";
+    }
 }
 
 void Transaction::setStatus(std::string status)
