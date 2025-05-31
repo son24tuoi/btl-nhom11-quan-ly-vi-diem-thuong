@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <ctime>
+#include <time.h>
 
 using namespace std;
 
@@ -80,10 +80,17 @@ std::string Transaction::getPrintTime() const
     {
         time_t rawTime = static_cast<time_t>(std::stoll(timestamp));
         std::tm timeInfo;
+        #ifdef _WIN32
+        if (localtime_s(&timeInfo, &rawTime) != 0)
+        {
+            return "Invalid time";
+        }
+    #else
         if (localtime_r(&rawTime, &timeInfo) == nullptr)
         {
             return "Invalid time";
         }
+    #endif
         std::ostringstream oss;
         oss << std::put_time(&timeInfo, "%c");
         return oss.str();

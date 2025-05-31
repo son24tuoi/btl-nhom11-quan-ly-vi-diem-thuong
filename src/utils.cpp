@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <random>
+#include <time.h>
 
 using namespace std;
 
@@ -25,4 +26,14 @@ void Utils::generateRandomPassword(string &password)
     {
         password += chars[dis(gen)];
     }
+}
+
+string Utils::getTimeNow()
+{
+    return to_string(time(NULL));
+}
+
+long Utils::getTimeNowByLong()
+{
+    return time(NULL);
 }

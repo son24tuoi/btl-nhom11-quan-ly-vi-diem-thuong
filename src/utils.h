@@ -9,7 +9,8 @@ namespace Utils
     std::string hashPassword(const std::string &input);
     void generateRandomPassword(std::string &password);
 
-
+    std::string getTimeNow();
+    long getTimeNowByLong();
 }
 
 #endif
