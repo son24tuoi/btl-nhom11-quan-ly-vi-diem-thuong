@@ -10,7 +10,7 @@ class UserManager
 {
 private:
     const std::string userFilePath = "../data/users.txt";
-    const std::string backupFilePath = "../backup/users.txt";
+    const std::string backupDir = "../backup/";
     const std::string systemWalletName = "system_wallet";
     const std::string systemWalletPass = "system_pass";
     const double initialSystemWalletBalance = 1000000.0;
@@ -22,7 +22,8 @@ private:
     std::vector<Transaction *> transactions;
 
     /// @brief Lưu dữ liệu người dùng vào file
-    void saveUsers();
+    /// @return true là thành công, false là thất bại
+    bool saveUsers();
 
     /// @brief Tải dữ liệu người dùng từ file
     void loadUsers();
@@ -94,6 +95,19 @@ public:
     void checkRollbackTransaction(User *user);
     void printTransactionHistory(User *user);
 
+    /// @brief Kiểm tra có phải tài khoản quản trị hay không
+    /// @param user 
+    /// @return 
+    bool isAdmin(User *user);
+
+    /// @brief Lấy đường dẫn thư mục sao lưu
+    /// @return 
+    std::string getBackupDir() const;
+
+    /// @brief Khôi phục dữ liệu
+    /// @param filePath đường dẫn file sao lưu
+    /// @return true là thành công, false là không thành công
+    bool restoreBackupData(const std::string filePath);
 };
 
 #endif

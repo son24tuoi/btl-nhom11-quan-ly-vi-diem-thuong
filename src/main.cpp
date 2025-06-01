@@ -11,13 +11,6 @@ void clearScreen()
         cout << endl;
 }
 
-void pause()
-{
-    cout << "Nhan Enter de tiep tuc...";
-    clearInputBuffer();
-    // system("pause");
-}
-
 void showMainMenu()
 {
     cout << "=== He Thong Quan Ly Vi ===" << endl;
@@ -28,7 +21,7 @@ void showMainMenu()
     cout << "Chon: ";
 }
 
-void showInnerMenu(bool isManager)
+void showInnerMenu(bool isManager, bool isAdmin)
 {
     cout << "=== Menu Chuc Nang ===" << endl;
     cout << "1. Thay doi mat khau" << endl;
@@ -42,7 +35,13 @@ void showInnerMenu(bool isManager)
         cout << "7. Tao tai khoan moi (Quan ly)" << endl;
         cout << "8. Theo doi danh sach (Quan ly)" << endl;
         cout << "9. Dieu chinh thong tin tai khoan khac (Quan ly)" << endl;
-        cout << "10. Dang xuat" << endl;
+        if (isAdmin)
+        {
+            cout << "10. Xem va khoi phuc du lieu sao luu (Admin)" << endl;
+            cout << "11. Dang xuat" << endl;
+        }
+        else
+            cout << "10. Dang xuat" << endl;
     }
     else
     {
@@ -57,14 +56,15 @@ void handleInnerMenu(UserManager &userManager, User *user)
     clearScreen();
     int choice;
     bool isManager = user->isManagerUser();
+    bool isAdmin = userManager.isAdmin(user);
 
     while (true)
     {
-        showInnerMenu(isManager);
+        showInnerMenu(isManager, isAdmin);
         cin >> choice;
         cin.ignore();
 
-        int exitChoice = isManager ? 10 : 7;
+        int exitChoice = isManager ? (isAdmin ? 11 : 10) : 7;
         if (choice == exitChoice)
         {
             cout << "Dang xuat thanh cong!\n";
@@ -121,10 +121,19 @@ void handleInnerMenu(UserManager &userManager, User *user)
                 cout << "Lua chon khong hop le!" << endl;
             }
             break;
+        case 10:
+            if (isManager && userManager.isAdmin(user))
+            {
+                showBackupdData(userManager);
+            }
+            else
+            {
+                cout << "Lua chon khong hop le!" << endl;
+            }
         default:
             break;
         }
-        cout << endl;
+
         pause();
         clearScreen();
     }
@@ -166,9 +175,8 @@ int main()
         default:
             cout << "Lua chon khong hop le!" << endl;
         }
-        cout << endl;
-        pause();
 
+        pause();
         clearScreen();
     }
 

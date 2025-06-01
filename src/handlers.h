@@ -5,6 +5,7 @@
 #include "wallet.h"
 #include "usermanager.h"
 #include "otp.h"
+#include "utils.h"
 
 const std::string noPendingChange = "noPendingChange";
 const std::string pendingChangeSuccess = "pendingChangeSuccess";
@@ -12,6 +13,9 @@ const std::string pendingChangeFail = "pendingChangeFail";
 
 /// @brief Xóa bộ đệm bàn phím
 void clearInputBuffer();
+
+/// @brief Tạm dừng, Enter để tiếp tục
+void pause();
 
 /// @brief In tiêu đề
 /// @param title
@@ -57,5 +61,11 @@ void handleAdjustAccount(UserManager &userManager);
 void processPendingChange(UserManager &userManager, const std::string &username, const std::string &field, const std::string &newValue);
 std::string checkPendingChangeForUser(UserManager &userManager, User *currentUser);
 void handleTransferPoints(UserManager &userManager, User *currentUser);
+
+/// @brief Hiển thị thông tin sao lưu dữ liệu
+void showBackupdData(UserManager &userManager);
+
+/// @brief Xử lý khôi phục dữ liệu
+void handleRestoreBackupData(UserManager &userManager, const std::string filePath);
 
 #endif

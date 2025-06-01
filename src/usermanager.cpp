@@ -56,14 +56,14 @@ void UserManager::loadUsers()
     file.close();
 }
 
-void UserManager::saveUsers()
+bool UserManager::saveUsers()
 {
     ofstream file(userFilePath);
 
     if (!file.is_open())
     {
         // cout << "Khong the mo file" << endl;
-        return;
+        return false;
     }
 
     for (int i = 0; i < users.size(); i++)
@@ -71,20 +71,45 @@ void UserManager::saveUsers()
         file << users[i].toString() << endl;
     }
     file.close();
+
+    try
+    {
+        backup();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    return true;
 }
 
 bool UserManager::backup()
 {
-    ofstream backup(backupFilePath);
+    ofstream backup(backupDir + "users_" + to_string(Utils::getTimeNowByLong()) + ".txt");
 
     if (!backup.is_open())
         return false;
 
-    backup << Utils::getTimeNowByLong() << endl;
-    for (int i = 0; i < users.size(); i++)
+    ifstream users(userFilePath);
+
+    if (!users.is_open())
+        return false;
+
+    // Thêm thời gian
+    time_t now = time(NULL);
+    tm *ltm = localtime(&now);
+    ostringstream oss;
+    oss << put_time(ltm, "%Y-%m-%d %H:%M:%S") << endl;
+    backup << oss.str() << endl;
+
+    string line;
+    while (getline(users, line))
     {
-        backup << users[i].toString() << endl;
+        backup << line << endl;
     }
+
+    users.close();
     backup.close();
     return true;
 }
@@ -419,13 +444,13 @@ bool UserManager::transferPoints(User *senderUser, User *receiverUser, double am
     // Tạo Transaction
     std::string timestamp = std::to_string(Utils::getTimeNowByLong());
     Transaction *transaction = new Transaction(
-    senderUser->getUsername(),
-    receiverUser->getUsername(),
-    amount,
-    timestamp,
-    Transaction::begin,
-    senderBalanceBefore,
-    receiverBalanceBefore);
+        senderUser->getUsername(),
+        receiverUser->getUsername(),
+        amount,
+        timestamp,
+        Transaction::begin,
+        senderBalanceBefore,
+        receiverBalanceBefore);
 
     transactions.push_back(transaction);
     Wallet *senderWallet = &senderUser->getWallet();
@@ -512,4 +537,45 @@ void UserManager::printTransactionHistory(User *user)
         std::cout << "Trang thai: " << transaction->getStatus() << "\n";
     }
     std::cout << "----------------------------------------\n";
+}
+
+bool UserManager::isAdmin(User *user)
+{
+    return user->getUsername() == systemWalletName;
+}
+
+std::string UserManager::getBackupDir() const
+{
+    return backupDir;
+}
+
+bool UserManager::restoreBackupData(const string filePath)
+{
+    ifstream backupFile(filePath);
+
+    if (!backupFile.is_open())
+    {
+        return false;
+    }
+
+    vector<User> users;
+    string line;
+    getline(backupFile, line); // bỏ qua dòng thời gian
+    getline(backupFile, line); // bỏ qua dòng trống
+    while (getline(backupFile, line))
+    {
+        try
+        {
+            // cout << line << endl;
+            users.push_back(User::fromString(line));
+        }
+        catch (const std::exception &e)
+        {
+            return false;
+        }
+    }
+    
+    this->users = users;
+
+    return saveUsers();
 }

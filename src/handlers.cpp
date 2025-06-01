@@ -3,6 +3,8 @@
 #include <string>
 #include <limits>
 #include <conio.h>
+#include <regex>
+#include <filesystem>
 
 using namespace std;
 
@@ -10,6 +12,14 @@ void clearInputBuffer()
 {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+void pause()
+{
+    cout << endl;
+    cout << "Nhan Enter de tiep tuc...";
+    clearInputBuffer();
+    // system("pause");
 }
 
 void printHeader(const string &title)
@@ -156,7 +166,9 @@ OTP:
     User *user = userManager.loginUser(username, password);
     if (user)
     {
-        cout << "Dang nhap thanh cong! Xin chao, " << user->getFullName() << endl;
+        cout << endl
+             << endl
+             << "Dang nhap thanh cong! Xin chao, " << user->getFullName() << endl;
 
         if (user->isRequiresChangePassword())
         {
@@ -575,5 +587,109 @@ void handleTransferPoints(UserManager &userManager, User *currentUser)
     else
     {
         cout << "Chuyen diem that bai. Kiem tra nguoi nhan hoac so du." << endl;
+    }
+}
+
+void showBackupdData(UserManager &userManager)
+{
+    // Đọc các file sao lưu
+
+    string backupDir = userManager.getBackupDir();
+    vector<filesystem::directory_entry> backupFiles;
+
+    if (!filesystem::exists(backupDir) || !filesystem::is_directory(backupDir))
+    {
+        cout << "Khong tim thay thu muc sao luu!" << endl;
+        return;
+    }
+
+    // Regex để lấy timestamp từ tên file, ví dụ: user_1717234567.txt
+    regex pattern(R"(users_(\d+)\.txt)");
+
+    cout << "Danh sach file backup:" << endl;
+    int idx = 1;
+    string filename;
+    smatch match;
+    for (const auto &entry : filesystem::directory_iterator(backupDir))
+    {
+        if (entry.is_regular_file())
+        {
+            filename = entry.path().filename().string();
+            if (regex_search(filename, match, pattern))
+            {
+                // Lấy timestamp từ tên file
+                time_t t = stoll(match[1]);
+                tm *ltm = localtime(&t);
+                cout << setw(5) << idx << ". "
+                     << put_time(ltm, "%Y-%m-%d %H:%M:%S")
+                     << "  (" << filename << ")" << endl;
+                backupFiles.push_back(entry);
+                idx++;
+            }
+        }
+    }
+    if (backupFiles.empty())
+    {
+        cout << "Khong co file backup nao!" << endl;
+        return;
+    }
+
+    // Lựa chọn xử lý sao lưu
+    int choice;
+    while (true)
+    {
+        cout << "Nhap so thu tu de xem file (<=0 de thoat): ";
+        cin >> choice;
+        cin.ignore();
+
+        if (choice <= 0)
+        {
+            return;
+        }
+
+        if (choice > 0 && choice <= backupFiles.size())
+        {
+            // Hiển thị nội dung file sao lưu
+            string filePath = backupFiles[choice - 1].path().string();
+            Utils::openFile(filePath);
+
+            cout << endl;
+            cout << "Nhan Enter de tiep tuc...";
+            clearInputBuffer();
+
+            handleRestoreBackupData(userManager, filePath);
+
+            cout << endl;
+            cout << "Nhan Enter de tiep tuc...";
+            clearInputBuffer();
+        }
+        else
+        {
+            cout << "Lua chon khong hop le!" << endl;
+        }
+    }
+}
+
+void handleRestoreBackupData(UserManager &userManager, const string filePath)
+{
+    cout << "Co khoi phuc du lieu khong (y/n): ";
+    string input;
+    cin >> input;
+    cin.ignore();
+
+    if (input == "y" || input == "Y")
+    {
+        if (userManager.restoreBackupData(filePath))
+        {
+            cout << "Khoi phuc du lieu thanh cong" << endl;
+        }
+        else
+        {
+            cout << "Khoi phuc du lieu that bai" << endl;
+        }
+    }
+    else
+    {
+        cout << "Huy thao tac khoi phuc du lieu" << endl;
     }
 }

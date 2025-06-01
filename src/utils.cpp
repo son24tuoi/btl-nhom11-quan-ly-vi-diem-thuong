@@ -1,6 +1,9 @@
 #include "utils.h"
 #include <random>
 #include <time.h>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 
 using namespace std;
 
@@ -36,4 +39,36 @@ string Utils::getTimeNow()
 long Utils::getTimeNowByLong()
 {
     return time(NULL);
+}
+
+void Utils::openFile(const string &filePath)
+{
+    ifstream file(filePath);
+
+    if (!file.is_open())
+    {
+        cout << "Khong mo duoc file" << endl;
+        return;
+    }
+
+    string line;
+    string filename = filesystem::path(filePath).filename().string();
+
+    cout << "--------------------------------------------------------------------" << endl
+         << "Bat dau " << filename << endl
+         << "--------------------------------------------------------------------" << endl
+         << endl;
+
+    while (getline(file, line))
+    {
+        cout << line << endl;
+    }
+
+    cout << endl
+         << "--------------------------------------------------------------------" << endl
+         << "Ket thuc " << filename << endl
+         << "--------------------------------------------------------------------" << endl
+         << endl;
+
+    file.close();
 }
