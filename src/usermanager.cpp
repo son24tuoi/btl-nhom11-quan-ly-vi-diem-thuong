@@ -13,19 +13,19 @@ UserManager::UserManager()
     loadPendingChanges();
     loadTransactions();
     initializeSystemWallet();
-    cout << "Da khoi tao UserManager" << endl;
+    // cout << "Da khoi tao UserManager" << endl;
 }
 
 void UserManager::initializeSystemWallet()
 {
-    if (users.empty())
-    {
-        cout << "Khong co nguoi dung, khoi tao vi tong" << endl;
-    }
+    // if (users.empty())
+    // {
+    //     cout << "Khong co nguoi dung, khoi tao vi tong" << endl;
+    // }
     if (hasUser(systemWalletName))
         return;
 
-    cout << "Khoi tao vi tong" << endl;
+    // cout << "Khoi tao vi tong" << endl;
     users.emplace_back(systemWalletName, hashPassword(systemWalletPass), systemWalletName, true, false, initialSystemWalletBalance);
     saveUsers();
 }
@@ -574,7 +574,7 @@ bool UserManager::restoreBackupData(const string filePath)
             return false;
         }
     }
-    
+
     this->users = users;
 
     return saveUsers();

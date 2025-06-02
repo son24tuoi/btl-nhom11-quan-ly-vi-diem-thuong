@@ -108,22 +108,23 @@ void handleRegister(UserManager &userManager)
     if (printEscInfor())
         return;
 
-    do
-    {
-        cout << "La quan ly? (1 = Co, 0 = Khong): ";
-        cin >> isManagerStr;
-        clearInputBuffer();
-        if (isManagerStr != "0" && isManagerStr != "1")
-        {
-            cout << "Khong dung dinh dang. Vui long nhap lai." << endl;
-            continue;
-        }
-        // cout << "La quan ly: [" << isManagerStr << "]" << endl;
-        break;
-    } while (true);
-    if (printEscInfor())
-        return;
-    bool isManager = (isManagerStr == "1");
+    // do
+    // {
+    //     cout << "La quan ly? (1 = Co, 0 = Khong): ";
+    //     cin >> isManagerStr;
+    //     clearInputBuffer();
+    //     if (isManagerStr != "0" && isManagerStr != "1")
+    //     {
+    //         cout << "Khong dung dinh dang. Vui long nhap lai." << endl;
+    //         continue;
+    //     }
+    //     // cout << "La quan ly: [" << isManagerStr << "]" << endl;
+    //     break;
+    // } while (true);
+    // if (printEscInfor())
+    //     return;
+    // bool isManager = (isManagerStr == "1");
+    bool isManager = false;
 
     if (userManager.registerUser(username, password, fullName, isManager, false))
     {

@@ -33,7 +33,7 @@ void showInnerMenu(bool isManager, bool isAdmin)
     if (isManager)
     {
         cout << "7. Tao tai khoan moi (Quan ly)" << endl;
-        cout << "8. Theo doi danh sach (Quan ly)" << endl;
+        cout << "8. Theo doi danh sach tai khoan (Quan ly)" << endl;
         cout << "9. Dieu chinh thong tin tai khoan khac (Quan ly)" << endl;
         if (isAdmin)
         {
